@@ -155,17 +155,13 @@ const midwives = [
       "Available for home-based prenatal and postpartum care, including breastfeeding support for mothers who need flexible scheduling.",
     // SAMPLE/DEMO service areas. Replace these PSGC city/municipality codes with the real areas this midwife serves.
     serviceAreas: [
-      { cityCode: "0702220000", label: "Cordova, Cebu", barangayCodes: ["*"] },
       {
-        cityCode: "0731100000",
-        label: "City of Lapu-Lapu",
+        cityCode: "1731500000",
+        label: "City of Puerto Princesa",
         barangayCodes: ["*"],
       },
-      {
-        cityCode: "0731300000",
-        label: "City of Mandaue",
-        barangayCodes: ["*"],
-      },
+      { cityCode: "1705318000", label: "Roxas", barangayCodes: ["*"] },
+      { cityCode: "1705315000", label: "Narra", barangayCodes: ["*"] },
     ],
   },
   {
@@ -188,9 +184,9 @@ const midwives = [
       "Supports prenatal home care, birth preparation, and first-time mothers who want additional guidance before delivery.",
     // SAMPLE/DEMO service areas.
     serviceAreas: [
-      { cityCode: "1381300000", label: "Quezon City", barangayCodes: ["*"] },
-      { cityCode: "1381200000", label: "City of Pasig", barangayCodes: ["*"] },
-      { cityCode: "1380300000", label: "City of Makati", barangayCodes: ["*"] },
+      { cityCode: "1705301000", label: "Aborlan", barangayCodes: ["*"] },
+      { cityCode: "1705302000", label: "Agutaya", barangayCodes: ["*"] },
+      { cityCode: "1705303000", label: "Araceli", barangayCodes: ["*"] },
     ],
   },
   {
@@ -213,13 +209,9 @@ const midwives = [
       "Provides prenatal and postpartum home support with a focus on newborn-care guidance and maternal education.",
     // SAMPLE/DEMO service areas.
     serviceAreas: [
-      { cityCode: "1130700000", label: "City of Davao", barangayCodes: ["*"] },
-      { cityCode: "1102319000", label: "City of Tagum", barangayCodes: ["*"] },
-      {
-        cityCode: "1102317000",
-        label: "Island Garden City of Samal",
-        barangayCodes: ["*"],
-      },
+      { cityCode: "1705304000", label: "Balabac", barangayCodes: ["*"] },
+      { cityCode: "1705305000", label: "Bataraza", barangayCodes: ["*"] },
+      { cityCode: "1705306000", label: "Brooke's Point", barangayCodes: ["*"] },
     ],
   },
   {
@@ -242,13 +234,9 @@ const midwives = [
       "Supports prenatal home care, birth preparation, and first-time mothers who want additional guidance before delivery.",
     // SAMPLE/DEMO service areas.
     serviceAreas: [
-      { cityCode: "1130700000", label: "City of Davao", barangayCodes: ["*"] },
-      { cityCode: "1102319000", label: "City of Tagum", barangayCodes: ["*"] },
-      {
-        cityCode: "1102317000",
-        label: "Island Garden City of Samal",
-        barangayCodes: ["*"],
-      },
+      { cityCode: "1705307000", label: "Busuanga", barangayCodes: ["*"] },
+      { cityCode: "1705308000", label: "Cagayancillo", barangayCodes: ["*"] },
+      { cityCode: "1705309000", label: "Coron", barangayCodes: ["*"] },
     ],
   },
   {
@@ -271,13 +259,9 @@ const midwives = [
       "Supports prenatal home care, birth preparation, and first-time mothers who want additional guidance before delivery.",
     // SAMPLE/DEMO service areas.
     serviceAreas: [
-      { cityCode: "1130700000", label: "City of Davao", barangayCodes: ["*"] },
-      { cityCode: "1102319000", label: "City of Tagum", barangayCodes: ["*"] },
-      {
-        cityCode: "1102317000",
-        label: "Island Garden City of Samal",
-        barangayCodes: ["*"],
-      },
+      { cityCode: "1705310000", label: "Cuyo", barangayCodes: ["*"] },
+      { cityCode: "1705311000", label: "Dumaran", barangayCodes: ["*"] },
+      { cityCode: "1705312000", label: "El Nido", barangayCodes: ["*"] },
     ],
   },
   {
@@ -300,13 +284,9 @@ const midwives = [
       "Supports prenatal home care, birth preparation, and first-time mothers who want additional guidance before delivery.",
     // SAMPLE/DEMO service areas.
     serviceAreas: [
-      { cityCode: "1130700000", label: "City of Davao", barangayCodes: ["*"] },
-      { cityCode: "1102319000", label: "City of Tagum", barangayCodes: ["*"] },
-      {
-        cityCode: "1102317000",
-        label: "Island Garden City of Samal",
-        barangayCodes: ["*"],
-      },
+      { cityCode: "1705313000", label: "Linapacan", barangayCodes: ["*"] },
+      { cityCode: "1705314000", label: "Magsaysay", barangayCodes: ["*"] },
+      { cityCode: "1705315000", label: "Narra", barangayCodes: ["*"] },
     ],
   },
 ];
@@ -670,6 +650,11 @@ function renderAvailableMidwives() {
   updateBookingSummary();
 }
 
+/**
+ * Copy of documentation can be found below of this script or
+ * see the online docs here: https://psgc.cloud/api-docs/v2
+ */
+
 async function loadRegions() {
   const regionSelect = $("regionSelect");
   try {
@@ -685,6 +670,9 @@ async function loadRegions() {
   }
 }
 
+// provinces, cites-municipalities from MIMAROPA Region (regionCode: 1700000000):
+// provinces = https://psgc.cloud/api/regions/1700000000/provinces/
+// cities = https://psgc.cloud/api/regions/1700000000/cities-municipalities/
 async function handleRegionChange() {
   const regionCode = $("regionSelect").value;
   resetSelect($("provinceSelect"), "Select a region first", true);
@@ -727,6 +715,9 @@ async function handleRegionChange() {
   updateBookingSummary();
 }
 
+// provinces from MIMAROPA Region = https://psgc.cloud/api/regions/1700000000/provinces/
+// cities & municipalities from Palawan (provinceCode = 1705300000):
+// https://psgc.cloud/api/provinces/1705300000/cities-municipalities/
 async function handleProvinceChange() {
   const provinceCode = $("provinceSelect").value;
   resetSelect($("barangaySelect"), "Select a city or municipality first", true);
@@ -760,6 +751,8 @@ async function handleProvinceChange() {
   updateBookingSummary();
 }
 
+// barangays from City of Puerto Princesa (cityCode = 1731500000):
+// https://psgc.cloud/api/cities-municipalities/1731500000/barangays
 async function handleCityMunicipalityChange() {
   const cityCode = $("cityMunicipalitySelect").value;
   resetSelect($("barangaySelect"), "Select a city or municipality first", true);
@@ -1561,3 +1554,139 @@ document.addEventListener("keydown", (event) => {
     );
   }
 })();
+
+/*
+Regions
+---------------------------------------------------------------------------------------------------------------------
+[LIST] GET https://psgc.cloud/api/v2/regions      
+[SHOW] GET https://psgc.cloud/api/v2/regions/{code_name}
+
+Payload Fields
+  List Payload  : code, name
+  Detail Payload: code, name, provinces_count, cities_municipalities_count, barangays_count
+
+Nested Sub-Resources
+  Provinces:                GET https://psgc.cloud/api/v2/regions/{code_name}/provinces
+  Cities & Municipalities:  GET https://psgc.cloud/api/v2/regions/{code_name}/cities-municipalities
+  Cities:                   GET https://psgc.cloud/api/v2/regions/{code_name}/cities
+  Municipalities:           GET https://psgc.cloud/api/v2/regions/{code_name}/municipalities
+  Sub-Municipalities:       GET https://psgc.cloud/api/v2/regions/{code_name}/sub-municipalities
+  Barangays:                GET https://psgc.cloud/api/v2/regions/{code_name}/barangays
+
+Example cURL & Fetch Requests
+  # curl list
+  curl -s https://psgc.cloud/api/v2/regions | jq '.[0]'
+
+  # curl detail (replace CODE_OR_NAME)
+  curl -s https://psgc.cloud/api/v2/regions/CODE_OR_NAME | jq
+
+  # fetch JavaScript example
+  const res = await fetch('https://psgc.cloud/api/v2/regions');
+  const items = await res.json();
+  console.log(items[0]);
+
+
+Provinces
+---------------------------------------------------------------------------------------------------------------------
+[LIST]  GET https://psgc.cloud/api/v2/provinces   
+[SHOW]  GET https://psgc.cloud/api/v2/provinces/{code_name}
+
+Payload Fields
+  List Payload  : code, name, region
+  Detail Payload: code, name, region, cities_municipalities_count, barangays_count
+
+Nested Sub-Resources
+  Cities & Municipalities:    GET https://psgc.cloud/api/v2/provinces/{code_name}/cities-municipalities
+  Cities:                     GET https://psgc.cloud/api/v2/provinces/{code_name}/cities
+  Municipalities:             GET https://psgc.cloud/api/v2/provinces/{code_name}/municipalities
+  Sub-Municipalities:         GET https://psgc.cloud/api/v2/provinces/{code_name}/sub-municipalities
+  Barangays:                  GET https://psgc.cloud/api/v2/provinces/{code_name}/barangays
+
+Example cURL & Fetch Requests
+  # curl list
+  curl -s https://psgc.cloud/api/v2/provinces | jq '.[0]'
+
+  # curl detail (replace CODE_OR_NAME)
+  curl -s https://psgc.cloud/api/v2/provinces/CODE_OR_NAME | jq
+
+  # fetch JavaScript example
+  const res = await fetch('https://psgc.cloud/api/v2/provinces');
+  const items = await res.json();
+  console.log(items[0]);
+
+
+Cities & Municipalities
+---------------------------------------------------------------------------------------------------------------------
+[LIST]  GET https://psgc.cloud/api/v2/cities-municipalities
+[SHOW]  GET https://psgc.cloud/api/v2/cities-municipalities/{code_name}
+
+Payload Fields
+  List Payload  : code, name, type, region, province
+  Detail Payload: code, name, type, region, province, barangays_count
+
+Nested Sub-Resources
+  Barangays:               GET https://psgc.cloud/api/v2/cities-municipalities/{code_name}/barangays
+
+Example cURL & Fetch Requests
+  # curl list
+  curl -s https://psgc.cloud/api/v2/cities-municipalities | jq '.[0]'
+
+  # curl detail (replace CODE_OR_NAME)
+  curl -s https://psgc.cloud/api/v2/cities-municipalities/CODE_OR_NAME | jq
+
+  # fetch JavaScript example
+  const res = await fetch('https://psgc.cloud/api/v2/cities-municipalities');
+  const items = await res.json();
+  console.log(items[0]);  
+
+
+Barangays
+---------------------------------------------------------------------------------------------------------------------
+[LIST]  GET https://psgc.cloud/api/v2/barangays
+[SHOW]  GET https://psgc.cloud/api/v2/barangays/{code_name}
+
+Payload Fields
+  List Payload  : code, name, status, region, province, city_municipality
+  Detail Payload: code, name, status, region, province, city_municipality
+
+Example cURL & Fetch Requests
+  # curl list
+  curl -s https://psgc.cloud/api/v2/barangays | jq '.[0]'
+
+  # curl detail (replace CODE_OR_NAME)
+  curl -s https://psgc.cloud/api/v2/barangays/CODE_OR_NAME | jq
+
+  # fetch JavaScript example
+  const res = await fetch('https://psgc.cloud/api/v2/barangays');
+  const items = await res.json();
+  console.log(items[0]);  
+
+
+Chainable Nested Paths
+---------------------------------------------------------------------------------------------------------------------  
+Traverse the full geographic hierarchy with automatic ancestry validation. Each segment along the route is 
+strictly validated against its parents—an ancestry mismatch triggers an immediate 404 Not Found.
+
+  GET https://psgc.cloud/api/v2/regions/{region}/provinces/{province}
+  GET https://psgc.cloud/api/v2/regions/{region}/provinces/{province}/cities-municipalities
+  GET https://psgc.cloud/api/v2/regions/{region}/provinces/{province}/cities-municipalities/{city_municipality}
+  GET https://psgc.cloud/api/v2/regions/{region}/provinces/{province}/cities-municipalities/{city_municipality}/barangays
+  GET https://psgc.cloud/api/v2/regions/{region}/provinces/{province}/cities-municipalities/{city_municipality}/barangays/{barangay}  
+  
+  For an instance, this will get all Barangays from City of Puerto Princesa, Province of Palawan, MIMAROPA Region
+    GET https://psgc.cloud/api/v2/regions/1700000000/provinces/1705300000/cities-municipalities/1731500000/barangays
+
+Ancestry cURL & JS Examples
+  # List cities/municipalities for a province inside a region
+  curl -s "https://psgc.cloud/api/v2/regions/Region V (Bicol Region)/provinces/Albay/cities-municipalities" | jq '.[0]'
+
+  # Fetch a barangay validating full ancestry
+  curl -s "https://psgc.cloud/api/v2/regions/Region V (Bicol Region)/provinces/Albay/cities-municipalities/City of Tabaco/barangays/Mariroc" | jq
+
+  # JS fetch example
+  const url = 'https://psgc.cloud/api/v2/regions/Region V (Bicol Region)/provinces/Albay/cities-municipalities/City of Tabaco/barangays';
+  const brgys = await (await fetch(url)).json();
+  console.log(brgys.length);
+
+Note: Use direct resource paths when you do not need strict parent validation.
+*/
