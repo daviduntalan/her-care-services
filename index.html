@@ -199,127 +199,7 @@
       </div>
     </section>
 
-    <section class="section partner-section" id="join">
-      <div class="partner-intro">
-        <div>
-          <span class="eyebrow">FOR REGISTERED MIDWIVES</span>
-          <h2>Be part of HER CARE.</h2>
-          <p>Join a platform built to connect qualified midwives with working mothers who need flexible home-based
-            maternal and newborn support in their own communities.</p>
-          <!-- <div class="partner-benefits">
-            <article><strong>80%</strong><span>Midwife share of the listed service fee</span></article>
-            <article><strong>20%</strong><span>HER CARE platform share</span></article>
-            <article><strong>Local</strong><span>Receive requests only from service areas you cover</span></article>
-          </div>
-          <div class="partner-note">
-            <strong>Example:</strong> A ₱750 Prenatal Plus booking allocates <b>₱600 to the midwife</b> and <b>₱150 to HER CARE</b>. The prototype calculates the split from the listed service fee; gateway fees, refunds, and taxes should be handled under the final business policy.
-          </div> -->
-        </div>
-
-        <div class="partner-form-card">
-          <div class="section-heading compact-heading">
-            <span class="eyebrow">MIDWIFE APPLICATION</span>
-            <h3>Apply to join the platform</h3>
-            <p>Submit your basic professional details and primary service area. HER CARE can contact you for credential
-              verification and onboarding.</p>
-          </div>
-          <form id="partnerForm" novalidate>
-            <div class="field-row">
-              <label>Full Name
-                <input id="partnerName" type="text" autocomplete="name" required placeholder="Full professional name" />
-              </label>
-              <label>Email Address
-                <input id="partnerEmail" type="email" autocomplete="email" required placeholder="name@example.com" />
-              </label>
-            </div>
-            <div class="field-row">
-              <label>Contact Number
-                <input id="partnerContact" type="tel" autocomplete="tel" required placeholder="09XX XXX XXXX" />
-              </label>
-              <label>PRC / Midwifery License No.
-                <input id="partnerLicense" type="text" required maxlength="80" placeholder="License number" />
-              </label>
-            </div>
-            <div class="field-row">
-              <label>Years of Practice
-                <input id="partnerYears" type="number" min="0" max="60" required placeholder="e.g. 5" />
-              </label>
-              <label>Preferred Availability
-                <select id="partnerAvailability" required>
-                  <option value="">Select availability</option>
-                  <option>Weekday mornings</option>
-                  <option>Weekday afternoons</option>
-                  <option>After-work / evenings</option>
-                  <option>Weekends</option>
-                  <option>Flexible schedule</option>
-                </select>
-              </label>
-            </div>
-
-            <fieldset class="partner-services">
-              <legend>Services you can provide</legend>
-              <label><input type="checkbox" name="partnerServices" value="Prenatal Care" /> Prenatal Care</label>
-              <label><input type="checkbox" name="partnerServices" value="Postpartum Care" /> Postpartum Care</label>
-              <label><input type="checkbox" name="partnerServices" value="Breastfeeding Support" /> Breastfeeding
-                Support</label>
-              <label><input type="checkbox" name="partnerServices" value="Birth Preparation" /> Birth
-                Preparation</label>
-              <label><input type="checkbox" name="partnerServices" value="Newborn Care Guidance" /> Newborn Care
-                Guidance</label>
-              <label><input type="checkbox" name="partnerServices" value="Maternal Immunization" /> Maternal
-                Immunization, when within authorized scope</label>
-            </fieldset>
-
-            <div class="partner-location-block">
-              <strong>Primary service area</strong>
-              <p class="field-help">Choose the main Philippine location where you are willing to accept home-visit
-                bookings.</p>
-              <div class="field-row">
-                <label>Region
-                  <select id="partnerRegionSelect" required>
-                    <option value="">Loading regions…</option>
-                  </select>
-                </label>
-                <label>Province <span class="optional">Where applicable</span>
-                  <select id="partnerProvinceSelect" disabled>
-                    <option value="">Select a region first</option>
-                  </select>
-                </label>
-              </div>
-              <div class="field-row">
-                <label>City / Municipality
-                  <select id="partnerCitySelect" required disabled>
-                    <option value="">Select a region first</option>
-                  </select>
-                </label>
-                <label>Barangay
-                  <select id="partnerBarangaySelect" required disabled>
-                    <option value="">Select a city or municipality first</option>
-                  </select>
-                </label>
-              </div>
-              <div id="partnerLocationStatus" class="location-status" role="status" aria-live="polite">Choose a region
-                to begin.</div>
-            </div>
-
-            <label>Professional Introduction <span class="optional">Optional</span>
-              <textarea id="partnerBio" rows="4" maxlength="800"
-                placeholder="Tell HER CARE about your experience, strengths, and the mothers you usually support."></textarea>
-            </label>
-            <label class="check-label">
-              <input id="partnerConsent" type="checkbox" required />
-              <span>I confirm that the information I submitted is accurate and understand that joining HER CARE is
-                subject to credential, identity, scope-of-practice, and service-area verification.</span>
-            </label>
-            <button class="btn btn-primary btn-full" id="partnerSubmit" type="submit">Submit Midwife
-              Application</button>
-            <p class="form-note">Do not upload IDs or sensitive credential documents through this public form. HER CARE
-              should request verification documents through a secured onboarding process.</p>
-          </form>
-          <div class="success-box hidden" id="partnerSuccess"></div>
-        </div>
-      </div>
-    </section>
+    <!-- previously Midwife Application here -->
 
     <section class="section booking-section" id="booking">
       <div class="booking-copy">
@@ -651,16 +531,145 @@
     </section>
   </main>
 
+  <section class="section partner-section" id="join">
+    <div class="partner-intro">
+      <div>
+        <span class="eyebrow">FOR REGISTERED MIDWIVES</span>
+        <h2>Be part of HER CARE.</h2>
+        <p>Join a platform built to connect qualified midwives with working mothers who need flexible home-based
+          maternal and newborn support in their own communities.</p>
+        <!-- <div class="partner-benefits">
+            <article><strong>80%</strong><span>Midwife share of the listed service fee</span></article>
+            <article><strong>20%</strong><span>HER CARE platform share</span></article>
+            <article><strong>Local</strong><span>Receive requests only from service areas you cover</span></article>
+          </div>
+          <div class="partner-note">
+            <strong>Example:</strong> A ₱750 Prenatal Plus booking allocates <b>₱600 to the midwife</b> and <b>₱150 to HER CARE</b>. The prototype calculates the split from the listed service fee; gateway fees, refunds, and taxes should be handled under the final business policy.
+          </div> -->
+      </div>
+
+      <div class="partner-form-card">
+        <div class="section-heading compact-heading">
+          <span class="eyebrow">MIDWIFE APPLICATION</span>
+          <h3>Apply to join the platform</h3>
+          <p>Submit your basic professional details and primary service area. HER CARE can contact you for credential
+            verification and onboarding.</p>
+        </div>
+        <form id="partnerForm" novalidate>
+          <div class="field-row">
+            <label>Full Name
+              <input id="partnerName" type="text" autocomplete="name" required placeholder="Full professional name" />
+            </label>
+            <label>Email Address
+              <input id="partnerEmail" type="email" autocomplete="email" required placeholder="name@example.com" />
+            </label>
+          </div>
+          <div class="field-row">
+            <label>Contact Number
+              <input id="partnerContact" type="tel" autocomplete="tel" required placeholder="09XX XXX XXXX" />
+            </label>
+            <label>PRC / Midwifery License No.
+              <input id="partnerLicense" type="text" required maxlength="80" placeholder="License number" />
+            </label>
+          </div>
+          <div class="field-row">
+            <label>Years of Practice
+              <input id="partnerYears" type="number" min="0" max="60" required placeholder="e.g. 5" />
+            </label>
+            <label>Preferred Availability
+              <select id="partnerAvailability" required>
+                <option value="">Select availability</option>
+                <option>Weekday mornings</option>
+                <option>Weekday afternoons</option>
+                <option>After-work / evenings</option>
+                <option>Weekends</option>
+                <option>Flexible schedule</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="partner-services">
+            <legend>Services you can provide</legend>
+            <label><input type="checkbox" name="partnerServices" value="Prenatal Care" /> Prenatal Care</label>
+            <label><input type="checkbox" name="partnerServices" value="Postpartum Care" /> Postpartum Care</label>
+            <label><input type="checkbox" name="partnerServices" value="Breastfeeding Support" /> Breastfeeding
+              Support</label>
+            <label><input type="checkbox" name="partnerServices" value="Birth Preparation" /> Birth
+              Preparation</label>
+            <label><input type="checkbox" name="partnerServices" value="Newborn Care Guidance" /> Newborn Care
+              Guidance</label>
+            <label><input type="checkbox" name="partnerServices" value="Maternal Immunization" /> Maternal
+              Immunization, when within authorized scope</label>
+          </fieldset>
+
+          <div class="partner-location-block">
+            <strong>Primary service area</strong>
+            <p class="field-help">Choose the main Philippine location where you are willing to accept home-visit
+              bookings.</p>
+            <div class="field-row">
+              <label>Region
+                <select id="partnerRegionSelect" required>
+                  <option value="">Loading regions…</option>
+                </select>
+              </label>
+              <label>Province <span class="optional">Where applicable</span>
+                <select id="partnerProvinceSelect" disabled>
+                  <option value="">Select a region first</option>
+                </select>
+              </label>
+            </div>
+            <div class="field-row">
+              <label>City / Municipality
+                <select id="partnerCitySelect" required disabled>
+                  <option value="">Select a region first</option>
+                </select>
+              </label>
+              <label>Barangay
+                <select id="partnerBarangaySelect" required disabled>
+                  <option value="">Select a city or municipality first</option>
+                </select>
+              </label>
+            </div>
+            <div id="partnerLocationStatus" class="location-status" role="status" aria-live="polite">Choose a region
+              to begin.</div>
+          </div>
+
+          <label>Professional Introduction <span class="optional">Optional</span>
+            <textarea id="partnerBio" rows="4" maxlength="800"
+              placeholder="Tell HER CARE about your experience, strengths, and the mothers you usually support."></textarea>
+          </label>
+          <label class="check-label">
+            <input id="partnerConsent" type="checkbox" required />
+            <span>I confirm that the information I submitted is accurate and understand that joining HER CARE is
+              subject to credential, identity, scope-of-practice, and service-area verification.</span>
+          </label>
+          <button class="btn btn-primary btn-full" id="partnerSubmit" type="submit">Submit Midwife
+            Application</button>
+          <p class="form-note">Do not upload IDs or sensitive credential documents through this public form. HER CARE
+            should request verification documents through a secured onboarding process.</p>
+        </form>
+        <div class="success-box hidden" id="partnerSuccess"></div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div class="footer-brand">
       <!-- <div class="brand-mark">H</div> -->
       <img src="images/logo.png" width="75" height="75" alt="logo">
       <div><strong>HER CARE</strong><span>Your Home. Your Time. Your Care.</span></div>
     </div>
-    <p>Midwife-led home care designed especially for working pregnant mothers, first-time mothers, and postpartum
+    <p>Midwife-led home care designed especially for working pregnant mothers, first-time
+      mothers, and postpartum
       mothers.</p>
-    <p class="footer-small">Prototype/demo website. Service availability, immunization, referrals, and clinical care
+    <p class="footer-small">Service availability, immunization, referrals, and clinical care
       must follow applicable professional scope, local requirements, and appropriate medical guidance.</p>
+    <div></div>
+    <div style="text-align: center;">
+      UNTALAN WEB DEVELOPMENT SERVICES &trade; &copy; 2026<br>
+      by David C. Untalan Jr. &phone; +63 927 414 1835<br>
+    </div>
+    <div></div>
   </footer>
 
   <div class="modal hidden" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
