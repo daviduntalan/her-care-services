@@ -406,7 +406,7 @@ function renderMidwives() {
       </div>
       <div class="tag-row">${midwife.services.map((service) => `<span class="tag">${service}</span>`).join("")}</div>
       <div class="availability"><strong>Available for:</strong><br>${midwife.services.join(" • ")}</div>
-      <div class="coverage-line"><strong>Sample service area:</strong><br>${midwife.serviceAreas.map((area) => area.label).join(" • ")}</div>
+      <div class="coverage-line"><strong>Service area:</strong><br>${midwife.serviceAreas.map((area) => area.label).join(" • ")}</div>
       <div class="midwife-actions">
         <button class="btn btn-outline view-profile" type="button" data-midwife="${midwife.id}">View Profile</button>
         <button class="btn btn-soft choose-midwife" type="button" data-midwife="${midwife.id}">Choose Midwife</button>
