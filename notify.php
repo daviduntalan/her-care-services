@@ -13,28 +13,33 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $config = require __DIR__ . '/config.php';
 require_once __DIR__ . '/smtp_mailer.php';
 
-function response_json(int $status, array $data): never {
+function response_json(int $status, array $data): never
+{
     http_response_code($status);
     echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-function clean_text(mixed $value, int $max = 1000): string {
+function clean_text(mixed $value, int $max = 1000): string
+{
     $text = trim((string)$value);
     $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $text) ?? '';
     return function_exists('mb_substr') ? mb_substr($text, 0, $max) : substr($text, 0, $max);
 }
 
-function valid_email(string $email): bool {
+function valid_email(string $email): bool
+{
     return (bool)filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-function valid_phone(string $phone): bool {
+function valid_phone(string $phone): bool
+{
     $digits = preg_replace('/\D+/', '', $phone) ?? '';
     return strlen($digits) >= 10 && strlen($digits) <= 15;
 }
 
-function send_email_notice(array $config, string $to, string $subject, string $body, ?string $replyTo = null): array {
+function send_email_notice(array $config, string $to, string $subject, string $body, ?string $replyTo = null): array
+{
     if (!valid_email($to)) {
         return [false, 'Invalid recipient email.'];
     }
@@ -63,7 +68,8 @@ function send_email_notice(array $config, string $to, string $subject, string $b
     return [$sent, $sent ? 'Email accepted by PHP mail().' : 'PHP mail() could not send the message. Configure server mail or SMTP.'];
 }
 
-function send_semaphore_sms(array $config, string $number, string $message): array {
+function send_semaphore_sms(array $config, string $number, string $message): array
+{
     $sms = $config['sms'] ?? [];
     if (empty($sms['enabled'])) {
         return [false, 'SMS is disabled.'];
@@ -142,7 +148,7 @@ if (!valid_email($adminEmail) || str_ends_with(strtolower($adminEmail), '@exampl
 }
 
 if ($type === 'booking') {
-    $required = ['reference', 'service', 'packageName', 'date', 'time', 'midwife', 'motherName', 'contactNumber', 'clientEmail', 'homeAddress', 'motherStatus'];
+    $required = ['reference', 'service', 'packageName', 'date', 'time', 'midwife', 'selectedLocation', 'motherName', 'contactNumber', 'clientEmail', 'homeAddress', 'motherStatus'];
     foreach ($required as $field) {
         if (clean_text($data[$field] ?? '', 2000) === '') {
             response_json(422, ['ok' => false, 'message' => "Missing required booking field: {$field}"]);
@@ -159,6 +165,32 @@ if ($type === 'booking') {
     }
 
     $reference = clean_text($data['reference'], 50);
+
+    $packagePrices = [
+        'basic-prenatal' => 250.00,
+        'prenatal-plus' => 500.00,
+        'prenatal-tetanus' => 750.00, // Base service fee only; any vaccine cost is separate.
+        'postpartum' => 250.00,
+        'new-mom' => 450.00,
+        'child-vac-package-1' => 1500.00,
+        'child-vac-package-2' => 2500.00,
+        'child-vac-package-3' => 2000.00,
+        'child-vac-package-4' => 1500.00,
+    ];
+    $packageId = clean_text($data['packageId'] ?? '', 80);
+    $paymentInfo = '';
+    if (isset($packagePrices[$packageId])) {
+        $gross = $packagePrices[$packageId];
+        $midwifePercent = (float)($config['payments']['midwife_share_percent'] ?? 80);
+        $companyPercent = (float)($config['payments']['company_share_percent'] ?? 20);
+        $midwifeAmount = round($gross * ($midwifePercent / 100), 2);
+        $companyAmount = round($gross - $midwifeAmount, 2);
+        $paymentInfo = "Payment allocation (internal):\n"
+            . "Total listed service fee: PHP " . number_format($gross, 2) . "\n"
+            . "Midwife share ({$midwifePercent}%): PHP " . number_format($midwifeAmount, 2) . "\n"
+            . "HER CARE share ({$companyPercent}%): PHP " . number_format($companyAmount, 2) . "\n\n";
+    }
+
     $adminSubject = "HER CARE booking request {$reference}";
     $adminBody = "A new HER CARE home-visit request was submitted.\n\n"
         . "Reference: {$reference}\n"
@@ -172,8 +204,10 @@ if ($type === 'booking') {
         . "Date: " . clean_text($data['date'], 100) . "\n"
         . "Time: " . clean_text($data['time'], 100) . "\n"
         . "Preferred midwife: " . clean_text($data['midwife'], 200) . "\n"
-        . "Home address: " . clean_text($data['homeAddress'], 700) . "\n\n"
+        . "Selected location: " . clean_text($data['selectedLocation'], 700) . "\n"
+        . "House / street / landmark: " . clean_text($data['homeAddress'], 700) . "\n\n"
         . "Additional concerns:\n" . (clean_text($data['concerns'] ?? '', 1200) ?: 'None provided') . "\n\n"
+        . $paymentInfo
         . "Please review availability and contact the mother to confirm the home visit.";
 
     [$adminSent, $adminMessage] = send_email_notice($config, $adminEmail, $adminSubject, $adminBody, $clientEmail);
@@ -195,7 +229,9 @@ if ($type === 'booking') {
             . "Package: " . clean_text($data['packageName'], 200) . "\n"
             . "Date: " . clean_text($data['date'], 100) . "\n"
             . "Time: " . clean_text($data['time'], 100) . "\n"
-            . "Preferred midwife: " . clean_text($data['midwife'], 200) . "\n\n"
+            . "Preferred midwife: " . clean_text($data['midwife'], 200) . "\n"
+            . "Home-visit area: " . clean_text($data['selectedLocation'], 700) . "\n"
+            . "House / street / landmark: " . clean_text($data['homeAddress'], 700) . "\n\n"
             . "A HER CARE midwife will confirm your appointment and provide further instructions.\n\n"
             . "For urgent symptoms or emergencies, seek immediate medical care rather than waiting for a HER CARE response.";
         [$emailSent, $emailMessage] = send_email_notice($config, $clientEmail, $clientSubject, $clientBody);
@@ -284,6 +320,80 @@ if ($type === 'question') {
         'message' => 'Question notification sent.',
         'adminNotified' => true,
         'clientChannel' => $clientChannel,
+    ]);
+}
+
+
+if ($type === 'midwife_application') {
+    $required = ['reference', 'name', 'email', 'contactNumber', 'licenseNumber', 'yearsPractice', 'availability', 'serviceArea'];
+    foreach ($required as $field) {
+        if (clean_text($data[$field] ?? '', 2000) === '') {
+            response_json(422, ['ok' => false, 'message' => "Missing required midwife application field: {$field}"]);
+        }
+    }
+
+    $email = clean_text($data['email'], 200);
+    $contactNumber = clean_text($data['contactNumber'], 50);
+    if (!valid_email($email)) {
+        response_json(422, ['ok' => false, 'message' => 'Please enter a valid midwife email address.']);
+    }
+    if (!valid_phone($contactNumber)) {
+        response_json(422, ['ok' => false, 'message' => 'Please enter a valid contact number.']);
+    }
+
+    $services = $data['services'] ?? [];
+    if (!is_array($services) || count($services) < 1) {
+        response_json(422, ['ok' => false, 'message' => 'Please select at least one service you can provide.']);
+    }
+    $services = array_slice(array_map(static fn($item) => clean_text($item, 120), $services), 0, 12);
+
+    $reference = clean_text($data['reference'], 50);
+    $adminSubject = "HER CARE midwife application {$reference}";
+    $adminBody = "A midwife applied to join HER CARE.\n\n"
+        . "Reference: {$reference}\n"
+        . "Name: " . clean_text($data['name'], 150) . "\n"
+        . "Email: {$email}\n"
+        . "Contact: {$contactNumber}\n"
+        . "PRC / Midwifery License No.: " . clean_text($data['licenseNumber'], 100) . "\n"
+        . "Years of practice: " . clean_text($data['yearsPractice'], 20) . "\n"
+        . "Preferred availability: " . clean_text($data['availability'], 120) . "\n"
+        . "Primary service area: " . clean_text($data['serviceArea'], 700) . "\n"
+        . "Services: " . implode(', ', $services) . "\n\n"
+        . "Professional introduction:\n" . (clean_text($data['bio'] ?? '', 1600) ?: 'None provided') . "\n\n"
+        . "Partner terms presented on the website: 80% of the listed service fee allocated to the midwife and 20% to HER CARE.\n\n"
+        . "Please verify identity, professional credentials, scope of practice, service area, and onboarding requirements before activation.";
+
+    [$adminSent, $adminMessage] = send_email_notice($config, $adminEmail, $adminSubject, $adminBody, $email);
+    if (!$adminSent) {
+        response_json(502, ['ok' => false, 'message' => 'The midwife application was not emailed to the admin. ' . $adminMessage]);
+    }
+
+    $clientSubject = "HER CARE midwife application received — {$reference}";
+    $clientBody = "Hello " . clean_text($data['name'], 150) . ",\n\n"
+        . "Thank you for your interest in joining HER CARE. We received your midwife application.\n\n"
+        . "Reference: {$reference}\n"
+        . "Primary service area: " . clean_text($data['serviceArea'], 700) . "\n"
+        . "Services: " . implode(', ', $services) . "\n\n"
+        . "HER CARE will review your application and may contact you for professional credential, identity, scope-of-practice, and service-area verification.\n\n"
+        . "The partner model shown on the website allocates 80% of the listed service fee to the midwife and 20% to HER CARE, subject to final onboarding terms and applicable fees, refunds, taxes, and policies.";
+
+    [$clientSent, $clientMessage] = send_email_notice($config, $email, $clientSubject, $clientBody);
+    if (!$clientSent) {
+        response_json(207, [
+            'ok' => true,
+            'partial' => true,
+            'message' => 'Admin received the midwife application, but the applicant acknowledgement email failed.',
+            'adminNotified' => true,
+            'clientChannel' => 'none',
+            'details' => [$clientMessage],
+        ]);
+    }
+
+    response_json(200, [
+        'ok' => true,
+        'message' => 'Midwife application sent.',
+        'adminNotified' => true,
+        'clientChannel' => 'email',
     ]);
 }
 
