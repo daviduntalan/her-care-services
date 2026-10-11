@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HER CARE notification configuration.
  *
@@ -23,7 +24,7 @@ return [
             'port' => 587,
             'encryption' => 'tls', // tls, ssl, or none
             'username' => '202120035@psu.palawan.edu.ph',
-            'password' => 'ljlw vodd qyex kxte', // For Gmail, use an App Password rather than your normal password.
+            'password' => getenv('HERCARE_SMTP_PASSWORD') ?: '',
             'timeout' => 15,
         ],
     ],
@@ -35,5 +36,19 @@ return [
         'provider' => 'semaphore',
         'api_key' => '',
         'sender_name' => '', // Must be an active sender name on your provider account.
+    ],
+
+    'payments' => [
+        // demo = safe presentation/testing checkout; paymongo = creates a real/test PayMongo Payment Link.
+        'mode' => 'demo',
+        // 'mode' => 'paymongo',
+        'provider' => 'paymongo',
+        'currency' => 'PHP',
+        'paymongo_secret_key' => getenv('PAYMONGO_SECRET_KEY') ?: '',
+        'midwife_share_percent' => 80,
+        'company_share_percent' => 20,
+        // Standard Payment Links collect into the HER CARE merchant account; this project records the 80/20 ledger split.
+        // Automatic direct settlement to midwife sub-accounts requires a platform payment-splitting product/account.
+        'settlement_mode' => 'ledger',
     ],
 ];
