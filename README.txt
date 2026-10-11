@@ -1,116 +1,172 @@
-HER CARE — HOME VISIT WEBSITE WITH EMAIL + SMS NOTIFICATIONS
-=============================================================
+HER CARE — LOCATION FILTER + MIDWIFE PARTNERS + PAYMENT GATEWAY
+================================================================
 
 WHAT THIS VERSION ADDS
 ----------------------
-1. Booking submissions are emailed to the HER CARE administrator.
-2. Clients receive a booking acknowledgement:
-   - SMS first, when the optional SMS gateway is enabled and succeeds.
-   - Email automatically if SMS is disabled or fails.
-3. Ask HER CARE questions are emailed to the administrator.
-4. Clients receive the same SMS-first / email-fallback acknowledgement for questions.
-5. A local browser copy is still kept as a backup.
-6. If server delivery fails, the page clearly warns the user not to assume the request was received.
+1. "Be Part of Us" button and midwife partner application form.
+2. Applicant details are emailed to the HER CARE administrator.
+3. The applying midwife receives an acknowledgement email.
+4. Applicant location uses Region → Province (where applicable) → City/Municipality → Barangay.
+5. Partner terms shown on the website:
+      80% of listed service fee → midwife
+      20% of listed service fee → HER CARE
+6. Booking checkout integration with two modes:
+      demo      = safe project/demo checkout, no real money
+      paymongo  = creates a PayMongo Payment Link from the PHP backend
+7. Payment amounts are derived server-side from the package ID rather than trusting a price sent by JavaScript.
+8. The internal 80/20 allocation is returned by the payment endpoint and recorded with the booking/payment data.
 
-IMPORTANT: THIS VERSION MUST RUN THROUGH PHP
---------------------------------------------
-Email/SMS will NOT work if index.html is opened by double-clicking it (file://...).
-Run the folder through a PHP-capable server such as XAMPP, WAMP, MAMP, Laragon,
-or a PHP web host.
+IMPORTANT PAYMENT DISTINCTION
+-----------------------------
+The included standard PayMongo Payment Link flow COLLECTS the payment into the HER CARE
+merchant account and records the 80/20 split as an internal ledger allocation.
 
-QUICK XAMPP SETUP
------------------
-1. Copy the whole HER CARE folder into:
-   C:\xampp\htdocs\her-care-notif\
+For automatic direct settlement between HER CARE and individual midwife accounts, you need
+a platform/marketplace payment-splitting product and verified connected/sub-merchant accounts.
+PayMongo Platforms supports payment splitting, but the account relationship and merchant IDs
+must be activated/configured with PayMongo before development.
+
+This project therefore defaults to a safe ledger split:
+  - the client pays the listed service fee;
+  - the system calculates 80% midwife / 20% HER CARE;
+  - HER CARE can settle the midwife share manually until a platform split account is enabled.
+
+The displayed 80/20 example is based on the listed service fee before gateway fees, refunds,
+and taxes. Final business/accounting policy should specify how those items are handled.
+
+FILES
+-----
+index.html          Website, partner application, booking/payment UI
+styles.css          Existing design + partner/payment styles
+app.js              Location filters, partner form, booking, payment flow
+notify.php          Booking/question emails + midwife application emails
+smtp_mailer.php     SMTP helper
+config.php          Email, SMS and payment settings
+create_payment.php  Secure server-side payment-link creator + 80/20 calculator
+payment-demo.php    Safe demo checkout for presentation/testing
+
+RUNNING LOCALLY WITH XAMPP
+--------------------------
+1. Copy this whole folder to:
+      C:\xampp\htdocs\her-care\
 
 2. Start Apache in XAMPP.
 
 3. Open:
-   http://localhost/her-care-notif/
+      http://localhost/her-care/
 
-4. Configure notifications in config.php before testing.
+Do not open index.html through file:// if you want email/payment PHP features to work.
 
-ADMIN EMAIL SETUP (REQUIRED)
-----------------------------
-Open config.php and change:
-
-    'admin_email' => 'admin@example.com',
-
-into the real HER CARE administrator email.
-
-Also change:
-
-    'from_email' => 'no-reply@example.com',
-
-into an address that your mail server is allowed to send from.
-
-EMAIL OPTION A — PHP mail()
----------------------------
-config.php defaults to:
-
-    'driver' => 'mail',
-
-This works only when PHP mail() is properly configured by the web host/server.
-A normal local XAMPP installation usually does not send internet email without
-additional mail-server configuration.
-
-EMAIL OPTION B — SMTP (RECOMMENDED FOR PROJECT TESTING)
--------------------------------------------------------
-Change:
+EMAIL SETUP
+-----------
+Keep your working SMTP configuration in config.php.
+Example Gmail setup:
 
     'driver' => 'smtp',
+    'from_email' => 'YOUR_HERCARE_EMAIL@gmail.com',
+    'smtp' => [
+        'host' => 'smtp.gmail.com',
+        'port' => 587,
+        'encryption' => 'tls',
+        'username' => 'YOUR_HERCARE_EMAIL@gmail.com',
+        'password' => 'YOUR_GOOGLE_APP_PASSWORD',
+        'timeout' => 15,
+    ],
 
-Then configure:
+Never publish config.php with real passwords/API keys.
 
-    'host' => 'smtp.gmail.com',
-    'port' => 587,
-    'encryption' => 'tls',
-    'username' => 'your-email@gmail.com',
-    'password' => 'YOUR_APP_PASSWORD',
+PAYMENT MODE A — DEMO (DEFAULT)
+-------------------------------
+config.php:
 
-For Gmail, use an App Password where available; do not put your normal account
-password into this project. Keep config.php private and never publish real
-credentials/API keys to a public Git repository.
+    'payments' => [
+        'mode' => 'demo',
+        'provider' => 'paymongo',
+        'currency' => 'PHP',
+        'paymongo_secret_key' => 'YOUR_PAYMONGO_SECRET_KEY',
+        'midwife_share_percent' => 80,
+        'company_share_percent' => 20,
+        'settlement_mode' => 'ledger',
+    ],
 
-OPTIONAL SMS SETUP — SEMAPHORE (PHILIPPINES)
---------------------------------------------
-SMS is OFF by default. The website works without it and falls back to email.
+After a booking is sent successfully, HER CARE generates a Demo Checkout button.
+The demo page lets you present GCash, Maya, Card and QR Ph options visually, but it does not
+move real money. Completing the demo stores a local demo payment record in the browser.
 
-To enable SMS, edit config.php:
+PAYMENT MODE B — PAYMONGO PAYMENT LINKS
+---------------------------------------
+1. Create/activate a PayMongo account.
+2. Get a TEST secret key first from the PayMongo developer settings.
+3. In config.php change:
 
-    'enabled' => true,
-    'provider' => 'semaphore',
-    'api_key' => 'YOUR_SEMAPHORE_API_KEY',
-    'sender_name' => 'YOUR_APPROVED_SENDER_NAME',
+      'mode' => 'paymongo',
+      'paymongo_secret_key' => 'sk_test_...',
 
-The backend sends SMS through Semaphore's message API. Your Semaphore account
-must have credits and a valid/active sender name as required by the provider.
+4. Submit a booking through HER CARE.
+5. create_payment.php creates the Payment Link on the server and returns the hosted checkout URL.
 
-FILES ADDED / CHANGED
----------------------
-index.html        Updated booking and Ask HerCare forms with client email/contact fields.
-app.js            Sends submissions to notify.php and shows delivery status.
-styles.css        Notification/error-state styles.
-config.php        Admin email, email driver/SMTP, and optional SMS settings.
-notify.php        Server endpoint for admin email + SMS/email client acknowledgement.
-smtp_mailer.php   Small SMTP sender so Composer/PHPMailer is not required.
+Important:
+- Keep the secret key only in config.php/PHP. Never place it in app.js or index.html.
+- Test with sk_test_... before using a live key.
+- Payment Links do not automatically send the 80% directly to a midwife in this project.
+- For real automatic split settlement, use PayMongo Platforms/payment splitting after obtaining
+  the required platform relationship and child/connected merchant identifiers.
+- For production payment status, configure PayMongo webhooks and treat the paid webhook as the
+  source of truth. This prototype does not mark live PayMongo payments paid in a database.
 
-PRIVACY / PRODUCTION NOTE
--------------------------
-This is appropriate as a project/prototype foundation, but maternal-health details,
-home addresses, phone numbers, and questions can be sensitive personal information.
-For real deployment, use HTTPS, a proper secured database/admin portal, access controls,
-retention/deletion rules, audit logs, backups, appropriate consent/privacy notices, and
-professional review for applicable healthcare and Philippine data-privacy requirements.
-Avoid putting detailed health information into SMS messages; this project intentionally
-keeps SMS acknowledgements brief.
+MIDWIFE PARTNER APPLICATION
+---------------------------
+The Be Part of Us form collects:
+- Full name
+- Email and contact number
+- PRC / Midwifery License No.
+- Years of practice
+- Preferred availability
+- Services offered
+- Primary Region / Province / City-Municipality / Barangay
+- Professional introduction
+- Verification consent
 
-TEST CHECKLIST
+Do not collect credential scans/IDs through the public email form. Request supporting documents
+later through a secured onboarding process.
+
+The application is sent to the same admin_email configured in config.php.
+The applicant also receives an email acknowledgement.
+
+80/20 EXAMPLES
 --------------
-[ ] Replace admin@example.com.
-[ ] Configure working email delivery (mail or SMTP).
-[ ] Submit a test booking and confirm the admin receives it.
-[ ] Confirm the client receives an email when SMS is disabled.
-[ ] Optional: configure SMS and confirm client receives a text.
-[ ] Submit an Ask HerCare question and confirm both notification paths.
-[ ] Test on mobile and desktop.
+Basic Prenatal Visit ₱500:
+  Midwife:  ₱400
+  HER CARE: ₱100
+
+Prenatal Plus ₱750:
+  Midwife:  ₱600
+  HER CARE: ₱150
+
+Postpartum Home Visit ₱600:
+  Midwife:  ₱480
+  HER CARE: ₱120
+
+New Mom Care Package ₱1,000:
+  Midwife:  ₱800
+  HER CARE: ₱200
+
+Prenatal + Tetanus Immunization uses the ₱850 base service fee for online payment/split.
+Any separate vaccine cost is excluded from the current online amount and should be handled by
+the final business policy.
+
+PRODUCTION NOTES
+----------------
+This is still a project/prototype foundation. Before handling real maternal-health bookings,
+professional credentials, home addresses, and real money, add at minimum:
+- HTTPS
+- a secured database
+- admin and midwife authenticated dashboards
+- server-side booking/schedule locking
+- payment webhook verification and payment-status records
+- audit logs
+- refund/cancellation policy
+- payout ledger and reconciliation
+- credential verification workflow
+- privacy/consent and data-retention rules
+- appropriate Philippine regulatory, healthcare, tax, and data-privacy review
